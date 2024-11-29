@@ -24,7 +24,8 @@ def travel_recommendations(request):
             {
                 "id": i,
                 "name": row[1],
-                "address": f"{row[2] or ''} {row[3] or ''} {row[4] or ''} {row[5] or ''} {row[6] or ''} {row[7] or ''}".strip()
+                "address": f"주소: {row[2] or ''} {row[3] or ''} {row[4] or ''} {row[5] or ''} {row[6] or ''} {row[7] or ''}".strip(),
+                "coordinates": f"위치: {row[8], row[9]}"
             }
             for i, row in enumerate(results, start=1)
         ]
@@ -51,18 +52,22 @@ def travel_detail(request, id):
         if not recommendation:
             return JsonResponse({"error": "Recommendation not found."}, status=404)
 
-        # location 값을 추출
-        location = recommendation.get("address", "").split()[0]  # 주소에서 첫 단어를 location으로 추출
-
         # OpenAI를 사용해 짧은 설명 생성
         try:
             description = process_natural_language(
-                f"대한민국 'location'에 있는 {recommendation['name']}라는 관광에 대한 설명을 두 줄로 작성해줘."
+                f"대한민국의 {recommendation['address']}'에 있는 {recommendation['name']}라는 관광지에 대한 설명을 두 줄로 작성해줘."
             )
             recommendation['description'] = description.strip()  # 짧은 설명 추가
         except Exception as ai_error:
             recommendation['description'] = "AI 설명 생성 실패"  # 실패 시 기본 메시지
 
-        return JsonResponse({"recommendation": recommendation})
+        return JsonResponse({
+            "recommendation": {
+                "name": recommendation['name'],
+                "address": recommendation['address'],
+                "coordinates": recommendation['coordinates'],
+                "description": recommendation['description']
+            }
+        })
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

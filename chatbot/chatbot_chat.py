@@ -28,34 +28,35 @@ def chatbot_chat(request):
 
     # 데이터베이스 검색 조건 확인
     sql_template = None
+    num_items = 1  # 기본적으로 한 개만 추천
     if "관광지" in message:
-        sql_template = "recommend_attractions"
+        sql_template = "recommend_one_attraction" if "하나" in message or "한 군데" in message else "recommend_attractions"
     elif "음식점" in message or "레스토랑" in message:
-        sql_template = "recommend_restaurants"
+        sql_template = "recommend_one_restaurant" if "하나" in message or "한 군데" in message else "recommend_restaurants"
     elif "숙소" in message or "호텔" in message:
-        sql_template = "recommend_accommodations"
+        sql_template = "recommend_one_accommodation" if "하나" in message or "한 군데" in message else "recommend_accommodations"
 
     # 데이터베이스 검색 및 결과 생성
     db_response = ""
     if sql_template:
         try:
-            params = [f"%{session.location}%"]
+            params = [session.location]
             results = execute_query(sql_template, params)
 
             if results:
                 db_response = "\n아래는 관련된 추천 항목입니다:\n"
                 for idx, row in enumerate(results, 1):
-                    if sql_template == "recommend_attractions":
+                    if sql_template in ["recommend_one_attraction", "recommend_attractions"]:
                         db_response += (
-                            f"{idx}. {row[1]} - {row[2]} {row[3]} {row[4]} {row[5]} {row[6]} {row[7]} "
+                            f"{idx}. 이름: {row[1]}, 주소: {row[2]} {row[3]} {row[4]} {row[5]} {row[6]} {row[7]} "
                             f"(좌표: {row[8]}, {row[9]})\n"
                         )
-                    elif sql_template == "recommend_restaurants":
+                    elif sql_template in ["recommend_one_restaurant", "recommend_restaurants"]:
                         db_response += (
-                            f"{idx}. {row[1]} - 주소: {row[2]}, 연락처: {row[3]}, "
-                            f"우편번호: {row[4]} (좌표: {row[5]}, {row[6]})\n"
+                            f"{idx}. {row[3]} - 주소: {row[4]}, 연락처: {row[1]}, "
+                            f"우편번호: {row[2]} (좌표: {row[5]}, {row[6]})\n"
                         )
-                    elif sql_template == "recommend_accommodations":
+                    elif sql_template in ["recommend_one_accommodation", "recommend_accommodations"]:
                         db_response += (
                             f"{idx}. {row[1]} - 주소: {row[2]} (좌표: {row[3]}, {row[4]}), 카테고리: {row[5]}\n"
                         )

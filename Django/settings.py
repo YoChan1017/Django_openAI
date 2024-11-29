@@ -19,6 +19,7 @@ load_dotenv()
 
 # OpenAI API 키 가져오기
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+# print(os.getenv('OPENAI_API_KEY'))  # 콘솔에 API 키 출력
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

@@ -24,9 +24,9 @@ def create_chatbot(request):
         "response": initial_message
     })
 
-@api_view(['GET'])
+@api_view(['POST'])
 def chatbot_log(request):
-    session_id = request.GET.get('session_id')
+    session_id = request.data.get('session_id')  # POST 요청의 JSON 본문에서 session_id 추출
     if not session_id:
         return JsonResponse({"error": "'session_id' is required."}, status=400)
 
@@ -35,12 +35,12 @@ def chatbot_log(request):
     except ChatSession.DoesNotExist:
         return JsonResponse({"error": "Session not found."}, status=404)
 
-    messages = session.messages.all()
+    messages = session.messages.all().order_by('timestamp')
     chat_history = [
         {
             "user_message": msg.user_message,
             "bot_response": msg.bot_response,
-            "timestamp": msg.timestamp
+            "timestamp": msg.timestamp.isoformat()
         }
         for msg in messages
     ]
