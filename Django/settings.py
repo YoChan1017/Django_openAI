@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'sol',             # openAI 모델 설정
     'travel',          # travel 앱
     'chatbot',         # chatbot 앱
+    'plan',            # plan 앱
     'rest_framework',  # Django REST Framework 추가
 ]
 
