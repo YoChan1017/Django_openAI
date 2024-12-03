@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'chatbot.middleware.ExpiredSessionMiddleware',                  # 만료 세션 삭제 미들웨어 추가
 ]
 
 ROOT_URLCONF = 'Django.urls'
@@ -90,11 +91,11 @@ WSGI_APPLICATION = 'Django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sollaim',              # MySQL 데이터베이스 이름
-        'USER': 'root',                 # MySQL 사용자 이름
-        'PASSWORD': '0000',             # MySQL 비밀번호
-        'HOST': '127.0.0.1',            # MySQL 호스트 (로컬: 127.0.0.1)
-        'PORT': '3306',                 # MySQL 포트 (기본값: 3306)
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', '3306'),  # 기본 포트: 3306
     }
 }
 

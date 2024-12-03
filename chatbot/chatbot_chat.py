@@ -61,9 +61,10 @@ def chatbot_chat(request):
                             f"{idx}. {row[1]} - 주소: {row[2]} (좌표: {row[3]}, {row[4]}), 카테고리: {row[5]}\n"
                         )
             else:
-                db_response = "\n관련된 데이터베이스 검색 결과를 찾을 수 없습니다."
+                db_response = "\n관련된 여행정보 검색 결과를 찾을 수 없습니다."
         except Exception as e:
-            db_response = f"\n데이터베이스 검색 중 오류가 발생했습니다: {str(e)}"
+            db_response = f"\n여행정보 검색 중 오류가 발생했습니다: {str(e)}"
+            print(f"[DEBUG] DB Error: {e}")  # 디버깅 로그
 
     # 생성형 AI 응답 생성
     try:
@@ -71,7 +72,9 @@ def chatbot_chat(request):
             # 데이터베이스 결과를 포함하여 AI 응답 생성
             prompt = (
                 f"다음은 사용자의 대화 기록입니다:\n\n{conversation_history}\n"
-                f"사용자: {message}\nAI: {db_response}을 참고하여 자연스러운 응답을 생성하세요."
+                f"사용자: {message}\n"
+                f"다음은 데이터베이스 검색 결과입니다:\n{db_response}\n"
+                f"이 정보를 참고하여 사용자가 이해하기 쉽게 자연스러운 응답을 생성하세요."
             )
         else:
             # 데이터베이스 결과가 없을 때 기본 응답 생성
@@ -81,7 +84,7 @@ def chatbot_chat(request):
         ai_response = "AI 응답 생성 중 오류가 발생했습니다."
 
     # 최종 응답 통합
-    final_response = f"{ai_response}{db_response}"
+    final_response = ai_response
 
     # 대화 기록 저장
     ChatMessage.objects.create(session=session, user_message=message, bot_response=final_response)

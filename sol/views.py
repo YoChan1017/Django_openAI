@@ -49,4 +49,5 @@ def execute_query(template_name, params):
             rows = cursor.fetchall()
         return rows
     except Exception as e:
+        print(f"[DEBUG] SQL Execution Error: {str(e)}")  # 디버깅 로그
         raise ValueError(f"SQL Execution Error: {str(e)}")
