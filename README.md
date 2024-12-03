@@ -1,6 +1,6 @@
 Django API Server Backup
 <br><br>
-* vm 폴더 ( 가상환경 ) 삭제 후 재설치
+vm 폴더 ( 가상환경 ) 삭제 후 재설치
 > python -m venv vm
 <br><br>
 1. > vm/Scripts/activate
