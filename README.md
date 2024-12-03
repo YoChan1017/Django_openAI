@@ -12,3 +12,5 @@ Django API Server Backup
 프로젝트 실행
 > python manage.py runserver
 <br>
+<br>
+챗봇 업데이트 필요
