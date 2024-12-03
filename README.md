@@ -40,7 +40,6 @@ auth_permission			Django의 권한 시스템에서 사용되는 권한 정의<br
 auth_user			Django의 기본 사용자 모델<br>
 auth_user_groups			사용자와 그룹 간의 관계를 관리<br>
 auth_user_user_permissions		사용자와 권한 간의 관계를 관리<br>
-<br>
 django_admin_log			Django 관리자 페이지에서 수행된 작업 로그를 저장<br>
 django_content_type		Django에서 사용되는 모든 모델의 정보를 저장<br>
 django_migrations			Django의 마이그레이션 기록<br>
