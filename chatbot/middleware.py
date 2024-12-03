@@ -4,7 +4,7 @@ from .models import ChatSession
 import time
 
 class ExpiredSessionMiddleware:
-    last_cleanup = 0  # 마지막 정리 시간
+    last_cleanup = 0  # 마지막 정리 시간 
 
     def __init__(self, get_response):
         self.get_response = get_response

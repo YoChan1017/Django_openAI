@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render 
 from sol.models import TABLES
 import openai
 from django.db import connection

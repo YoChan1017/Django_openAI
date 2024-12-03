@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path 
 from .views import travel_recommendations, travel_detail
 
 urlpatterns = [

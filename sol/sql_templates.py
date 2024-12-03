@@ -1,5 +1,5 @@
 SQL_TEMPLATES = {
-    # 기존 템플릿들
+    # 기존 템플릿들 
     "recommend_attractions": """
         -- 특정 도시에서 관광지 5개를 랜덤 추천
         SELECT num, name, city, city2, city3, city4, bunnum, roadadd, x, y

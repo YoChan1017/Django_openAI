@@ -19,7 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('sol/', include('sol.urls')),              # sol 앱 URL 연결
+    path('sol/', include('sol.urls')),              # sol 앱 URL 연결 
     path('sol/travel/', include('travel.urls')),    # travel 앱 경로 추가
     path('sol/chatbot/', include('chatbot.urls')),  # chatbot 앱 경로 추가
     path('sol/calendar/', include('plan.urls')),        # plan 앱 경로 추가

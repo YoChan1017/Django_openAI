@@ -60,7 +60,7 @@ def get_places_from_db(location):
         print(f"MySQL DB 오류: {str(e)}")
         return None
 
-# Function to extract city and district from address
+# Function to extract city and district from address 
 def extract_city_and_district(address):
     match = re.search(r'(\S+시|\S+도)\s+(\S+구|\S+군|\S+시)', address)
     if match:

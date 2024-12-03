@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.timezone import now
 from datetime import timedelta
 
-
 class ChatSession(models.Model):
     session_id = models.CharField(max_length=100, unique=True)
     location = models.CharField(max_length=100)

@@ -3,6 +3,7 @@ from sol.views import execute_query, process_natural_language
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .models import ChatSession, ChatMessage
+from .travel_tags import accommodation_tag, attraction_tag, restaurant_tag
 
 @api_view(['POST'])
 def chatbot_chat(request):
@@ -15,7 +16,7 @@ def chatbot_chat(request):
         return JsonResponse({"error": "Both 'session_id' and 'message' are required."}, status=400)
 
     try:
-        # 세션 확인
+        # 세션 확인 
         session = ChatSession.objects.get(session_id=session_id)
     except ChatSession.DoesNotExist:
         return JsonResponse({"error": "Session not found."}, status=404)
@@ -28,12 +29,12 @@ def chatbot_chat(request):
 
     # 데이터베이스 검색 조건 확인
     sql_template = None
-    num_items = 1  # 기본적으로 한 개만 추천
-    if "관광지" in message:
+    num_items = 1  # 기본적으로 한 개만 추천 
+    if any(tag in message for tag in attraction_tag):
         sql_template = "recommend_one_attraction" if "하나" in message or "한 군데" in message else "recommend_attractions"
-    elif "음식점" in message or "레스토랑" in message:
+    elif any(tag in message for tag in restaurant_tag):
         sql_template = "recommend_one_restaurant" if "하나" in message or "한 군데" in message else "recommend_restaurants"
-    elif "숙소" in message or "호텔" in message:
+    elif any(tag in message for tag in accommodation_tag):
         sql_template = "recommend_one_accommodation" if "하나" in message or "한 군데" in message else "recommend_accommodations"
 
     # 데이터베이스 검색 및 결과 생성
@@ -48,17 +49,30 @@ def chatbot_chat(request):
                 for idx, row in enumerate(results, 1):
                     if sql_template in ["recommend_one_attraction", "recommend_attractions"]:
                         db_response += (
-                            f"{idx}. 이름: {row[1]}, 주소: {row[2]} {row[3]} {row[4]} {row[5]} {row[6]} {row[7]} "
-                            f"(좌표: {row[8]}, {row[9]})\n"
+                            f"{idx}.\n"
+                            f"name: {row[1]}\n"
+                            f"address: {row[2]} {row[3]} {row[4]} {row[5]} {row[6]} {row[7]}\n "
+                            f"latitude: {row[8]}\n"
+                            f"longitude: {row[9]}\n"
                         )
                     elif sql_template in ["recommend_one_restaurant", "recommend_restaurants"]:
                         db_response += (
-                            f"{idx}. {row[3]} - 주소: {row[4]}, 연락처: {row[1]}, "
-                            f"우편번호: {row[2]} (좌표: {row[5]}, {row[6]})\n"
+                            f"{idx}.\n"
+                            f"name: {row[4]}\n"
+                            f"call: {row[1]}\n"
+                            f"address: {row[3]}\n "
+                            f"post: {row[2]}\n"
+                            f"latitude: {row[5]}\n"
+                            f"longitude: {row[6]}"
                         )
                     elif sql_template in ["recommend_one_accommodation", "recommend_accommodations"]:
                         db_response += (
-                            f"{idx}. {row[1]} - 주소: {row[2]} (좌표: {row[3]}, {row[4]}), 카테고리: {row[5]}\n"
+                            f"{idx}.\n"
+                            f"name: {row[1]}\n"
+                            f"address: {row[2]}\n"
+                            f"cat: {row[5]}\n"
+                            f"latitude: {row[3]}\n"
+                            f"longitude: {row[4]}\n"
                         )
             else:
                 db_response = "\n관련된 여행정보 검색 결과를 찾을 수 없습니다."
