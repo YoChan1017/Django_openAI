@@ -13,4 +13,8 @@
 > python manage.py runserver
 <br>
 <br>
-챗봇 업데이트 필요
+테스트 방법<br>
+- Postman - API 명세표 참고<br>
+<br>
+수정사항<br>
+- 챗봇 업데이트/개선 필요
