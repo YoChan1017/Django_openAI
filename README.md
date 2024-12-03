@@ -1,5 +1,6 @@
 Django API Server Backup
 <br><br><br>
-> vm/Scripts/activate<br>
-> python manage.py migrate<br>
-> pip install -r requirements.txt<br>
+1. > vm/Scripts/activate<br>
+2. > pip install -r requirements.txt<br>
+3. > python manage.py migrate<br>
+4. > python manage.py runserver
