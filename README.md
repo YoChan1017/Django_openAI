@@ -4,10 +4,10 @@ Django API Server Backup
 > python -m venv vm
 
 프로젝트 세팅
-> vm/Scripts/activate
-> pip install -r requirements.txt
-> python manage.py makemigrations chatbot
-> python manage.py migrate
+> vm/Scripts/activate<br>
+> pip install -r requirements.txt<br>
+> python manage.py makemigrations chatbot<br>
+> python manage.py migrate<br>
 
 프로젝트 실행
 > python manage.py runserver
