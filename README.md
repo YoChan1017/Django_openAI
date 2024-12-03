@@ -9,6 +9,10 @@
 > python manage.py makemigrations chatbot<br>
 > python manage.py migrate<br>
 
+.env 파일 설정<br>
+OPENAI_API_KEY 작성<br>
+MySQL 계정 작성<br>
+
 프로젝트 실행
 > python manage.py runserver
 <br>
