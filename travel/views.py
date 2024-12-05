@@ -25,8 +25,8 @@ def travel_recommendations(request):
                 "id": i,
                 "name": row[1],
                 "address": f"{row[2] or ''} {row[3] or ''} {row[4] or ''} {row[5] or ''} {row[6] or ''} {row[7] or ''}".strip(),
-                "latitude": f"{row[8]}",
-                "longitude": f"{row[9]}"
+                "latitude": f"{row[9]}",
+                "longitude": f"{row[8]}"
             }
             for i, row in enumerate(results, start=1)
         ]

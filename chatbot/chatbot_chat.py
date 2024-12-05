@@ -52,8 +52,8 @@ def chatbot_chat(request):
                             f"{idx}.\n"
                             f"name: {row[1]}\n"
                             f"address: {row[2]} {row[3]} {row[4]} {row[5]} {row[6]} {row[7]}\n "
-                            f"latitude: {row[8]}\n"
-                            f"longitude: {row[9]}\n"
+                            f"latitude: {row[9]}\n"
+                            f"longitude: {row[8]}\n"
                         )
                     elif sql_template in ["recommend_one_restaurant", "recommend_restaurants"]:
                         db_response += (

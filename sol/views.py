@@ -17,7 +17,7 @@ def process_natural_language(query):
     ])
 
     system_prompt = f"""
-    당신은 MySQL 전문가입니다. 다음은 사용 가능한 데이터베이스 테이블 목록입니다:
+    당신은 여행 전문가입니다. 다음은 사용 가능한 데이터베이스 테이블 목록입니다:
     {table_descriptions}
     """
     
