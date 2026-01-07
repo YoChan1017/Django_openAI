@@ -5,6 +5,7 @@ OpenAI 기반 여행 일정 추천 및 챗봇 백엔드 서비스
 > SOLAIM - Django_openAI<br>
 > Python · Django · OpenAI API · REST Architecture · MySQL
 
+---
 
 ## 프로젝트 개요
 
@@ -12,6 +13,7 @@ OpenAI 기반 여행 일정 추천 및 챗봇 백엔드 서비스
 
 Django_openAI(SOLAIM)는 사용자가 입력한 여행지(location)와 여행 기간(days)을 기반으로 관광지·식당·숙소 데이터를 분석하고 **OpenAI API**를 활용해 자연어 설명과 대화형 챗봇 서비스를 제공하는 AI 여행 추천 백엔드 시스템입니다.
 
+---
 
 ## 개발 목적
 
@@ -19,6 +21,7 @@ Django_openAI(SOLAIM)는 사용자가 입력한 여행지(location)와 여행 �
 
 - Django REST Framework 기반 **API 서버 설계 경험**
 
+---
 
 ## 기술 스택
 
@@ -30,6 +33,7 @@ Django_openAI(SOLAIM)는 사용자가 입력한 여행지(location)와 여행 �
 - MySQL 
 - Redis
 
+---
 
 ## 주요 파일 및 기능
 
