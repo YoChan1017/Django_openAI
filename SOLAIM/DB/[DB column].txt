@@ -1,0 +1,34 @@
+[DB column]
+
+CREATE TABLE IF NOT EXISTS restaurants (
+	Num INTERGER,
+	Call TEXT,
+	Post TEXT,
+	Address TEXT,
+	Name TEXT,
+	X REAL,
+	Y REAL
+	)
+
+CREATE TABLE IF NOT EXISTS accommodations (
+	Num INTERER,
+	Name TEXT,
+	Address TEXT,
+	Latitude REAL,
+	Longitude REAL,
+	Cat TEXT
+	)
+
+CREATE TABLE IF NOT EXISTS attractions (
+	Num INTERER,
+	Name TEXT,
+	City TEXT,
+	City2 TEXT,
+	City3 TEXT,
+	City4 TEXT,
+	Bunnum TEXT,
+	Roadadd TEXT,
+	X REAL,
+	Y REAL
+	)
+
