@@ -1,3 +1,19 @@
+# 퍼블릭 클라우드 DevSecOps 융합 인재 양성 과정 
+> Project_03_SOLAIM
+
+## Project Overview
+> SOLAIM_Django_openAI<br>
+> Python · Django · OpenAI API · REST Architecture
+
+
+
+
+
+
+
+
+<br><br><br><br><br>
+
 프로젝트 실행 방법
 <br><br>
 .env 파일 설정<br>
@@ -20,7 +36,6 @@ MySQL 계정 작성<br>
 테스트 방법<br>
 - Postman - API 명세표 참고<br>
 <br>
-앞으로 해결해야 할 일<br>
 - 챗봇 : 좀 더 자연스러운 대화 및 sql 템플릿 필요<br>
 - 적은 데이터로 인해 AI설명 불일치<br>
 <br><br>
