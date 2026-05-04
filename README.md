@@ -212,3 +212,18 @@ JSON 응답 반환
 - API 키 및 DB 접속 정보는 `.env` 파일로 분리, 코드에 하드코딩하지 않음
 - 미들웨어를 통한 만료 세션 자동 삭제로 불필요한 사용자 데이터 최소화
 - CSRF 데코레이터 적용 및 Django 기본 보안 미들웨어 활성화
+
+---
+
+## 💻 서비스 실행 화면
+
+### 1.
+<img width="1656" height="800" alt="image" src="https://github.com/user-attachments/assets/07b4744e-61bd-4e29-bfee-c6c2811b550c" />
+
+### 2.
+<img width="1656" height="800" alt="image" src="https://github.com/user-attachments/assets/2c240dc5-a8e7-4889-a51e-970be531a45a" />
+
+### 3.
+<img width="1645" height="800" alt="image" src="https://github.com/user-attachments/assets/c147c6fc-1c64-469b-9d68-0fc4f188a669" />
+
+
