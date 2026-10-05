@@ -1,22 +1,31 @@
-# 🌏 SOLAIM — AI 기반 여행 추천 & 챗봇 백엔드
+# 🌏 SOLAIM
 
-> **퍼블릭 클라우드 DevSecOps 융합 인재 양성 과정 | Project_03**  
-> Python · Django · Django REST Framework · OpenAI API · MySQL · Redis
+> **AI 기반 여행 추천 & 챗봇 백엔드 서비스**
+>
+> 퍼블릭 클라우드 DevSecOps 융합 인재 양성 과정 | Project_03
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-A30000?style=flat-square&logo=django&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
+
+---
 
 ## 📌 프로젝트 소개
 
-**SOLAIM**은 사용자가 입력한 여행지와 여행 기간을 기반으로 관광지·식당·숙소 데이터를 조회하고, OpenAI GPT를 활용해 여행 정보에 대한 자연어 설명과 대화형 챗봇을 제공하는 **AI 여행 추천 백엔드 서비스**입니다.
+**SOLAIM**은 사용자가 입력한 여행지를 기준으로 관광지·식당·숙소 데이터를 조회하고, OpenAI API를 활용해 여행지에 대한 자연어 설명과 대화형 챗봇 응답을 제공하는 **Django REST Framework 기반 백엔드 서비스**입니다.
 
-Django REST Framework를 기반으로 REST API 서버를 구성하여, 웹 프론트엔드나 모바일 애플리케이션과 독립적으로 통신할 수 있도록 설계했습니다.
+여행지 추천, 일정 생성, AI 챗봇 기능을 각각 Django App으로 분리하고, MySQL에 저장된 여행 데이터를 조회한 뒤 필요한 정보를 JSON 형태의 API 응답으로 제공합니다.
 
 ### 프로젝트 목표
 
-- 생성형 AI API를 백엔드 서비스에 연동
 - Django REST Framework 기반 REST API 설계 및 구현
-- MySQL을 활용한 여행 데이터 관리
-- 세션 기반 챗봇과 대화 이력 관리
-- Redis 및 서버 측 캐시를 활용한 데이터 처리 구조 경험
-- 미들웨어를 활용한 세션 관리 및 데이터 정리
+- MySQL 기반 여행 데이터 조회 및 활용
+- OpenAI API를 활용한 생성형 AI 기능 구현
+- UUID 기반 챗봇 세션 및 대화 이력 관리
+- Django Middleware를 활용한 만료 세션 정리
+- 서버 측 임시 캐시를 활용한 추천 결과 상태 관리
 
 ---
 
@@ -25,122 +34,231 @@ Django REST Framework를 기반으로 REST API 서버를 구성하여, 웹 프�
 | 구분 | 기술 |
 |---|---|
 | Language | Python 3 |
-| Framework | Django 5.1 |
+| Framework | Django 5.1.3 |
 | API | Django REST Framework |
-| AI | OpenAI API, GPT-4o-mini |
+| AI | OpenAI API · GPT-4o-mini |
 | Database | MySQL |
-| Cache | Redis, django-redis |
+| DB Driver | mysqlclient · PyMySQL |
+| Cache | In-memory Cache |
 | Server | Gunicorn |
 | Environment | python-dotenv |
-| Test | pytest-django |
+| Test Dependency | pytest-django |
+
+> Redis 및 `django-redis`는 의존성에 포함되어 있으나, 현재 주요 기능에서는 별도의 Redis 캐시 서버 대신 서버 메모리 기반 `CACHE` 딕셔너리를 사용합니다.
 
 ---
 
 ## ✨ 주요 기능
 
-### 1. 여행지 관광지 추천
+## 1. 🗺️ 여행지 관광지 추천
 
-`/sol/travel/`
+`POST /sol/travel/`
 
-사용자가 여행지와 여행 기간을 입력하면 해당 지역의 관광지 데이터를 조회하여 추천 목록을 제공합니다.
+사용자가 입력한 여행지를 기준으로 관광지 데이터를 조회하고 최대 5개의 추천 결과를 반환합니다.
 
-- 여행지 및 여행 기간 입력
-- 관광지 5곳 추천
-- 관광지 상세 정보 조회
-- OpenAI API를 이용한 관광지 자연어 설명 생성
+### 주요 기능
 
-### 2. 여행 일정 자동 생성
+- 여행지 입력
+- 관광지 데이터 지역 검색
+- 관광지 5곳 랜덤 추천
+- 추천 관광지 상세 조회
+- OpenAI API를 이용한 관광지 설명 생성
 
-`/sol/calendar/`
+### 처리 흐름
 
-여행지와 기간을 기준으로 숙소·관광지·식당 데이터를 조합하여 일자별 여행 일정을 생성합니다.
+```text
+여행지 입력
+    ↓
+Django REST API
+    ↓
+SQL Template
+    ↓
+MySQL 관광지 조회
+    ↓
+추천 결과 임시 저장
+    ↓
+JSON Response
+```
 
-- 일자별 여행 일정 생성
-- 숙소 1곳
-- 관광지 3곳
-- 식당 2곳
-- 주소에서 지역 정보를 추출하여 데이터 필터링
-- 일정 항목 상세 조회
-- OpenAI API를 이용한 일정 정보 설명 생성
-
-### 3. AI 챗봇
-
-`/sol/chatbot/`
-
-여행지와 여행 기간을 기반으로 사용자와 대화할 수 있는 세션 기반 AI 챗봇을 제공합니다.
-
-- UUID 기반 세션 생성
-- 사용자 메시지 분석
-- 데이터베이스 검색 결과와 GPT 응답 결합
-- 대화 이력 저장 및 조회
-- 세션 만료 데이터 자동 정리
+관광지 데이터 조회에는 사전에 정의한 SQL Template과 파라미터 바인딩을 사용합니다.
 
 ---
 
-## 🏗 시스템 아키텍처
+## 2. 🗓️ 여행 일정 자동 생성
+
+`POST /sol/calendar/`
+
+여행지와 여행 기간을 기준으로 숙소·관광지·식당을 조합하여 일자별 여행 일정을 생성합니다.
+
+### 일정 구성
+
+하루 기준으로 다음 데이터를 조합합니다.
+
+- 숙소 1곳
+- 관광지 3곳
+- 식당 2곳
+
+### 주요 기능
+
+- 여행지 및 여행 기간 입력
+- 지역에 맞는 숙소 검색
+- 숙소 주소에서 시·구·군 정보 추출
+- 해당 지역의 관광지 검색
+- 해당 지역의 식당 검색
+- 일자별 랜덤 일정 구성
+- 일정 항목별 상세 정보 조회
+- OpenAI API를 이용한 장소 설명 생성
+
+### 처리 흐름
 
 ```text
-┌──────────────────────┐
-│      Client          │
-│ Web / Mobile / etc. │
-└──────────┬───────────┘
-           │ HTTP Request
-           ▼
-┌──────────────────────┐
-│   Django URL Router  │
-└──────────┬───────────┘
-           ▼
-┌─────────────────────────────────┐
-│          Django Apps            │
-│                                 │
-│ travel │ chatbot │ plan │ sol   │
-└──────────────┬──────────────────┘
-               │
-       ┌───────┴────────┐
-       ▼                ▼
-┌──────────────┐  ┌────────────────┐
-│   MySQL      │  │  OpenAI API    │
-│              │  │   GPT-4o-mini  │
-│ 여행 데이터   │  │ AI 응답 생성   │
-└──────────────┘  └────────────────┘
-               │
-               ▼
-        ┌──────────────┐
-        │ JSON Response│
-        └──────────────┘
+여행지 + 여행 기간
+        ↓
+숙소 조회
+        ↓
+주소에서 지역 정보 추출
+        ↓
+관광지 / 식당 조회
+        ↓
+랜덤 데이터 조합
+        ↓
+일자별 일정 생성
+        ↓
+JSON Response
 ```
 
-### Django Application 구조
+---
+
+## 3. 💬 AI 챗봇
+
+### API
+
+| Method | Endpoint | 설명 |
+|---|---|---|
+| POST | `/sol/chatbot/` | 챗봇 세션 생성 |
+| POST | `/sol/chatbot/chat/` | 사용자 메시지 전송 |
+| POST | `/sol/chatbot/log/` | 대화 이력 조회 |
+
+### 주요 기능
+
+- UUID 기반 세션 생성
+- 여행지 및 여행 기간을 세션 정보로 저장
+- 이전 대화 이력 조회
+- 사용자 메시지에서 여행 관련 카테고리 판별
+- 사전 정의 SQL Template을 이용한 DB 검색
+- 검색 결과를 포함한 OpenAI API 응답 생성
+- 사용자 메시지 및 AI 응답 저장
+- 대화 이력 조회
+
+### 처리 흐름
+
+```text
+사용자 메시지
+      ↓
+세션 확인
+      ↓
+키워드 기반 요청 유형 판별
+      ↓
+┌──────────────────────┐
+│ 관광지 / 식당 / 숙소  │
+└──────────┬───────────┘
+           ↓
+    SQL Template 선택
+           ↓
+        MySQL 조회
+           ↓
+      DB 검색 결과
+           ↓
+     OpenAI API 호출
+           ↓
+      자연어 응답 생성
+           ↓
+     대화 이력 저장
+           ↓
+      JSON Response
+```
+
+---
+
+## 🏗️ 시스템 아키텍처
+
+```text
+┌──────────────────────────────┐
+│           Client             │
+│       Web / Mobile etc.      │
+└──────────────┬───────────────┘
+               │ HTTP
+               ▼
+┌──────────────────────────────┐
+│        Django Router         │
+└──────────────┬───────────────┘
+               │
+     ┌─────────┼─────────┐
+     ▼         ▼         ▼
+┌────────┐ ┌────────┐ ┌────────┐
+│ Travel │ │ Chatbot│ │  Plan  │
+└────┬───┘ └────┬───┘ └────┬───┘
+     │           │          │
+     └───────────┼──────────┘
+                 │
+        ┌────────┴────────┐
+        ▼                 ▼
+┌───────────────┐  ┌────────────────┐
+│    MySQL      │  │   OpenAI API   │
+│               │  │   GPT-4o-mini  │
+│ 여행 데이터    │  │ 자연어 생성     │
+└───────────────┘  └────────────────┘
+                 │
+                 ▼
+          JSON Response
+```
+
+---
+
+## 📂 프로젝트 구조
 
 ```text
 Django_openAI/
 ├── Django/
 │   ├── settings.py
-│   └── urls.py
+│   ├── urls.py
+│   └── wsgi.py
 │
 ├── sol/
 │   ├── views.py
+│   ├── models.py
+│   ├── urls.py
 │   └── sql_templates.py
 │
 ├── travel/
-│   └── views.py
+│   ├── views.py
+│   └── urls.py
 │
 ├── chatbot/
 │   ├── models.py
-│   └── views.py
+│   ├── views.py
+│   ├── chatbot_chat.py
+│   ├── middleware.py
+│   └── urls.py
 │
 ├── plan/
-│   └── views.py
+│   ├── views.py
+│   └── urls.py
 │
 ├── manage.py
-└── requirements.txt
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## 🗄 데이터베이스
+## 🗄️ 데이터베이스
+
+여행 서비스에 필요한 관광지·식당·숙소 데이터를 MySQL에서 관리하고, 챗봇의 세션 및 대화 이력은 Django Model을 통해 관리합니다.
 
 ### 여행 데이터
+
+#### `attractions`
 
 ```text
 attractions
@@ -156,6 +274,8 @@ attractions
 └── y
 ```
 
+#### `restaurants`
+
 ```text
 restaurants
 ├── num
@@ -166,6 +286,8 @@ restaurants
 ├── x
 └── y
 ```
+
+#### `accommodations`
 
 ```text
 accommodations
@@ -179,16 +301,20 @@ accommodations
 
 ### 챗봇 데이터
 
-Django Model을 활용하여 세션과 대화 이력을 관리합니다.
+#### `ChatSession`
 
 ```text
-chatbot_chatsession
+ChatSession
 ├── session_id
 ├── location
 ├── days
 └── created_at
+```
 
-chatbot_chatmessage
+#### `ChatMessage`
+
+```text
+ChatMessage
 ├── session
 ├── user_message
 ├── bot_response
@@ -197,21 +323,20 @@ chatbot_chatmessage
 
 ---
 
-## 🔌 API
+## 🔌 API 명세
 
 ### 관광지 추천
 
-| Method | Endpoint | Description |
+| Method | Endpoint | 설명 |
 |---|---|---|
-| POST | `/sol/travel/` | 여행지 관광지 5곳 추천 |
-| GET | `/sol/travel/<id>/` | 관광지 상세 정보 및 AI 설명 |
+| POST | `/sol/travel/` | 여행지 관광지 추천 |
+| GET | `/sol/travel/<id>/` | 추천 관광지 상세 정보 |
 
 #### Request
 
 ```json
 {
-  "location": "서울",
-  "days": 3
+  "location": "서울"
 }
 ```
 
@@ -236,30 +361,47 @@ chatbot_chatmessage
 
 ### 여행 일정 생성
 
-| Method | Endpoint | Description |
+| Method | Endpoint | 설명 |
 |---|---|---|
-| POST | `/sol/calendar/` | 전체 여행 일정 생성 |
-| GET | `/sol/calendar/<id>/` | 일정 항목 상세 조회 |
+| POST | `/sol/calendar/` | 여행 일정 생성 |
+| GET | `/sol/calendar/<id>/` | 일정 항목 상세 정보 |
+
+#### Request
+
+```json
+{
+  "location": "서울",
+  "days": 3
+}
+```
 
 #### Response
 
 ```json
 {
+  "location": "서울",
+  "days": 3,
   "itinerary": [
     {
       "day": 1,
       "schedule": [
         {
           "id": 1,
-          "name": "그랜드하얏트",
-          "table": "accommodations",
-          "address": "..."
+          "name": "숙소 이름",
+          "address": "서울 ...",
+          "table": "accommodations"
         },
         {
           "id": 2,
-          "name": "남산타워",
-          "table": "attractions",
-          "address": "..."
+          "name": "관광지 이름",
+          "address": "서울 ...",
+          "table": "attractions"
+        },
+        {
+          "id": 3,
+          "name": "식당 이름",
+          "address": "서울 ...",
+          "table": "restaurants"
         }
       ]
     }
@@ -269,20 +411,39 @@ chatbot_chatmessage
 
 ---
 
-### AI 챗봇
+### 챗봇 세션 생성
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/sol/chatbot/` | 챗봇 세션 생성 |
-| POST | `/sol/chatbot/chat/` | 사용자 메시지 전송 |
-| POST | `/sol/chatbot/log/` | 대화 이력 조회 |
+```json
+{
+  "location": "서울",
+  "days": 3
+}
+```
 
-#### Session Response
+#### Response
 
 ```json
 {
   "session_id": "abc123...",
   "response": "안녕하세요! '서울'에서 3일 동안의 여행을 도와드릴게요."
+}
+```
+
+### 챗봇 메시지
+
+```json
+{
+  "session_id": "abc123...",
+  "message": "서울에서 관광지 추천해줘"
+}
+```
+
+#### Response
+
+```json
+{
+  "session_id": "abc123...",
+  "response": "..."
 }
 ```
 
@@ -292,82 +453,134 @@ chatbot_chatmessage
 
 ### 1. OpenAI API 연동
 
-여행지 및 관광지에 대한 설명을 생성하기 위해 OpenAI API를 백엔드에서 호출하도록 구현했습니다.
+OpenAI API를 이용하여 관광지 및 일정 항목에 대한 자연어 설명과 챗봇 응답을 생성합니다.
 
 ```text
-Client
-  ↓
 Django View
-  ↓
+    ↓
+Prompt 생성
+    ↓
 OpenAI API
-  ↓
-Generated Response
-  ↓
-JSON Response
+    ↓
+GPT-4o-mini
+    ↓
+자연어 응답
 ```
 
-이를 통해 정적인 관광지 데이터뿐 아니라 사용자의 요청에 따라 생성되는 자연어 정보를 함께 제공하도록 구성했습니다.
+DB 검색 결과가 필요한 챗봇 요청은 먼저 데이터를 조회한 후 검색 결과를 프롬프트에 포함하여 AI 응답을 생성하도록 구성했습니다.
 
-### 2. SQL Template 기반 데이터 조회
+---
 
-여행지 검색에 필요한 SQL을 사전에 정의하고, 사용자 입력값은 파라미터 바인딩 방식으로 전달하도록 구성했습니다.
+### 2. SQL Template + Parameter Binding
+
+여행 데이터 검색에 필요한 SQL을 `sql_templates.py`에 사전 정의하고, 사용자 입력은 파라미터로 전달합니다.
 
 ```text
-User Input
+사용자 입력
     ↓
-Location / Days Validation
+입력값 정리
     ↓
-Predefined SQL Template
+SQL Template 선택
     ↓
-Parameterized Query
+Parameter Binding
     ↓
-MySQL
+MySQL Query
 ```
 
-이를 통해 사용자 입력을 SQL 문자열에 직접 결합하지 않고 데이터 조회를 수행하도록 구현했습니다.
+예를 들어 관광지 추천에는 지역 조건과 `ORDER BY RAND()`를 사용하여 최대 5개의 관광지를 조회합니다.
 
-### 3. 세션 기반 챗봇
+```sql
+SELECT num, name, city, city2, city3, city4, bunnum, roadadd, x, y
+FROM attractions
+WHERE city LIKE %s
+ORDER BY RAND()
+LIMIT 5;
+```
 
-챗봇은 UUID 기반 세션을 생성하고 해당 세션에 사용자 메시지와 GPT 응답을 연결하여 대화 이력을 관리합니다.
+---
+
+### 3. UUID 기반 챗봇 세션
+
+챗봇 세션 생성 시 UUID를 발급하고, 해당 세션에 여행지·기간 정보를 저장합니다.
+
+각 사용자의 메시지와 AI 응답은 `ChatMessage`로 연결하여 대화 이력을 관리합니다.
 
 ```text
-Chat Session
+ChatSession
      │
-     ├── User Message
-     ├── Bot Response
-     ├── User Message
-     └── Bot Response
+     ├── ChatMessage
+     ├── ChatMessage
+     └── ChatMessage
 ```
 
-세션이 일정 시간 이상 유지되지 않도록 만료 데이터를 자동으로 정리하는 미들웨어도 구현했습니다.
+---
 
-### 4. 추천 결과 임시 캐시
+### 4. 만료 세션 정리 Middleware
 
-관광지 추천 결과는 서버 메모리의 `CACHE` 딕셔너리에 임시 보관하여 상세 조회 과정에서 불필요한 재조회가 발생하지 않도록 구성했습니다.
+세션 생성 후 10분이 지난 `ChatSession`을 대상으로 정리 작업을 수행하는 커스텀 Middleware를 구현했습니다.
+
+```text
+HTTP Request
+     ↓
+ExpiredSessionMiddleware
+     ↓
+10분 경과 세션 조회
+     ↓
+삭제
+     ↓
+실제 View 실행
+```
+
+정리 작업은 별도의 백그라운드 스케줄러가 아니라 **요청이 들어올 때 Middleware에서 수행**되도록 구현했습니다.
+
+---
+
+### 5. 추천 결과 임시 캐시
+
+관광지 추천 결과를 서버 메모리의 `CACHE` 딕셔너리에 저장하여 상세 조회 시 기존 추천 결과를 다시 조회하지 않도록 구현했습니다.
+
+```text
+POST /sol/travel/
+       ↓
+DB 조회
+       ↓
+CACHE 저장
+       ↓
+GET /sol/travel/<id>/
+       ↓
+CACHE 조회
+```
+
+> 현재 캐시는 프로세스 메모리 기반의 임시 상태 저장 방식이므로, 다중 프로세스·다중 서버 환경에서는 공유되지 않는 한계가 있습니다.
 
 ---
 
 ## 🚨 기술적 고려사항
 
-### SQL Injection 방지
+### SQL Injection 대응
 
-사용자 입력을 SQL 문자열에 직접 연결하는 방식 대신, 사전에 정의한 SQL Template과 파라미터 바인딩을 사용하도록 구성했습니다.
+SQL에 사용자 입력을 문자열로 직접 결합하지 않고 파라미터 바인딩 방식으로 전달하도록 구현했습니다.
 
-### 세션 데이터 관리
+### 입력값 검증
 
-챗봇 세션은 일정 시간이 지나면 만료되도록 구성하고, 미들웨어를 통해 오래된 세션 데이터를 자동으로 정리합니다.
+필수 파라미터 존재 여부와 `days` 값의 형식을 확인한 뒤 잘못된 요청에는 HTTP `400` 응답을 반환합니다.
 
-### 환경 변수 분리
+### 예외 처리
 
-OpenAI API Key 및 데이터베이스 접속 정보를 코드와 분리하여 환경 변수로 관리하도록 구성했습니다.
+DB 조회나 AI 응답 생성 과정에서 문제가 발생한 경우 오류 메시지와 적절한 HTTP 상태 코드를 반환하도록 처리했습니다.
 
-```text
-OPENAI_API_KEY
-DB_USER
-DB_PASSWORD
-DB_HOST
-DB_NAME
-DB_PORT
+### 환경 변수 관리
+
+OpenAI API Key와 MySQL 접속 정보는 `python-dotenv`를 이용하여 환경 변수에서 읽도록 구성했습니다.
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_HOST=your_db_host
+DB_NAME=your_db_name
+DB_PORT=3306
 ```
 
 ---
@@ -381,7 +594,7 @@ git clone https://github.com/YoChan1017/Django_openAI.git
 cd Django_openAI
 ```
 
-### 2. 가상환경 생성
+### 2. 가상환경 생성 및 활성화
 
 ```bash
 python -m venv vm
@@ -407,26 +620,15 @@ pip install -r requirements.txt
 
 ### 4. 환경 변수 설정
 
-프로젝트 루트에 `.env` 파일을 생성하고 다음 항목을 설정합니다.
-
-```env
-OPENAI_API_KEY=your_openai_api_key
-
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=your_db_host
-DB_NAME=your_db_name
-DB_PORT=your_db_port
-```
+프로젝트 루트에 `.env` 파일을 생성하고 DB 및 OpenAI API 정보를 설정합니다.
 
 ### 5. 데이터베이스 마이그레이션
 
 ```bash
-python manage.py makemigrations chatbot
 python manage.py migrate
 ```
 
-### 6. 개발 서버 실행
+### 6. 서버 실행
 
 ```bash
 python manage.py runserver
@@ -434,50 +636,65 @@ python manage.py runserver
 
 ---
 
-## 📷 서비스 실행 화면
+## 📷 서비스 화면
 
 ### 여행지 추천
 
-<img width="1656" height="800" alt="SOLAIM 여행지 추천" src="https://github.com/user-attachments/assets/07b4744e-61bd-4e29-bfee-c6c2811b550c" />
+![SOLAIM 여행지 추천](https://github.com/user-attachments/assets/07b4744e-61bd-4e29-bfee-c6c2811b550c)
 
 ### 여행 일정 생성
 
-<img width="1656" height="800" alt="SOLAIM 여행 일정" src="https://github.com/user-attachments/assets/2c240dc5-a8e7-4889-a51e-970be531a45a" />
+![SOLAIM 여행 일정](https://github.com/user-attachments/assets/2c240dc5-a8e7-4889-a51e-970be531a45a)
 
 ### AI 챗봇
 
-<img width="1645" height="800" alt="SOLAIM AI 챗봇" src="https://github.com/user-attachments/assets/c147c6fc-1c64-469b-9d68-0fc4f188a669" />
+![SOLAIM AI 챗봇](https://github.com/user-attachments/assets/c147c6fc-1c64-469b-9d68-0fc4f188a669)
 
 ---
 
 ## 📚 프로젝트를 통해 경험한 내용
 
-- Django REST Framework 기반 API 서버 설계
-- 외부 AI API를 활용한 생성형 AI 서비스 구현
-- MySQL 기반 데이터 조회 및 관리
-- SQL Template 및 Parameter Binding을 활용한 데이터 접근
+- Django REST Framework 기반 API 개발
+- MySQL 데이터베이스 연동 및 SQL 작성
+- Parameter Binding 기반 DB 조회
+- OpenAI API 연동 및 프롬프트 구성
 - UUID 기반 세션 관리
-- Django Middleware를 이용한 세션 데이터 관리
-- Redis 및 서버 측 캐시 활용
-- Gunicorn 기반 서버 실행 환경 구성
-- REST API와 외부 클라이언트 간 데이터 통신 구조 설계
+- Django Middleware 작성
+- 서버 메모리 기반 임시 상태 관리
+- 외부 클라이언트와 JSON 기반 데이터 통신
+- Gunicorn 기반 WSGI 서버 구성
+- Python 가상환경 및 환경 변수 관리
 
 ---
 
 ## 🔮 개선 방향
 
-현재 구조를 기반으로 다음과 같은 개선을 고려할 수 있습니다.
+### 캐시 구조 개선
 
-- 추천 결과 캐시를 Redis 기반으로 통합하여 서버 확장성 개선
-- API 예외 처리 및 입력값 검증 강화
-- 테스트 코드 확대
-- API 인증 및 사용자별 서비스 상태 관리
-- Docker 기반 배포 환경 구성
-- API 문서 자동화 및 관리
-- OpenAI API 호출 비용 및 응답 시간 최적화
+현재 서버 메모리 기반 `CACHE`를 Redis와 같은 외부 저장소로 변경하여 다중 프로세스 및 다중 서버 환경에서도 공유 가능한 캐시 구조로 개선할 수 있습니다.
+
+### API 구조 개선
+
+- 요청/응답 Schema 검증 강화
+- 공통 예외 처리 구조 도입
+- API 인증 및 사용자별 데이터 관리
+- OpenAPI 기반 API 문서화
+
+### 데이터 처리 개선
+
+- 대규모 데이터 조회를 고려한 인덱스 설계
+- `ORDER BY RAND()` 사용 방식 개선
+- DB 연결 관리 및 쿼리 구조 개선
+
+### AI 기능 개선
+
+- OpenAI API 호출 비용 최적화
+- 응답 시간 개선
+- 프롬프트 구조 개선
+- 생성 결과의 안정적인 형식 관리
 
 ---
 
 ## 🔗 Repository
 
-[GitHub - YoChan1017/Django_openAI](https://github.com/YoChan1017/Django_openAI)
+https://github.com/YoChan1017/Django_openAI
